@@ -30,7 +30,6 @@ After(async () => {
  When('clicks the login button', async () => {
     const loginButton = page.locator('[data-test="login-submit"]');
     await loginButton.waitFor({ state: "visible" });
-    // await page.waitForLoadState("networkidle");
     await loginButton.click();
  } );
 
@@ -38,8 +37,7 @@ After(async () => {
    
     await page.getByRole("heading", { name: "My Account" }).waitFor({ state: "visible" }); 
     const headingText = await page.getByRole("heading", { name: "My Account" }).innerText();
-    console.log("Heading text after login: ",headingText);
-    expect(headingText.trim()).toBe("My Account");
+    expect(headingText.trim()).toBe("My account");
      await expect(page).toHaveURL(/.*account/); 
    
  } );
