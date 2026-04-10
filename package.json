@@ -1,0 +1,27 @@
+{
+  "name": "playwright-bdd-pom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cucumber-js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kolkarcodes/playwright-bdd-pom.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kolkarcodes/playwright-bdd-pom/issues"
+  },
+  "homepage": "https://github.com/kolkarcodes/playwright-bdd-pom#readme",
+  "devDependencies": {
+    "@cucumber/cucumber": "^12.7.0",
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.5.2",
+    "dotenv": "^17.4.1",
+    "ts-node": "^10.9.2"
+  }
+}
