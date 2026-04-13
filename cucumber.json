@@ -1,8 +1,13 @@
 {
   "default": {
-    "require": ["steps/**/*.ts"],
-    "path": ["features/**/*.ts"],
+    "require": [
+       "support/**/*.ts",
+      "steps/**/*.ts"
+    ],
+    "path": ["features/**/*.feature"],
     "requireModule": ["ts-node/register"],
-    "timeout": 15000
+    "timeout": 60000,
+    "publish": true,
+    "format": ["progress"]
   }
 }

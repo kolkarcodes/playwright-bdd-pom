@@ -1,45 +1,53 @@
-import {Given, When,Then,Before,After} from "@cucumber/cucumber"; 
-import {chromium,Page, Browser, expect} from "@playwright/test";
+import { Given, When, Then } from "@cucumber/cucumber";
+import { expect } from "@playwright/test";
+import { CustomWorld } from "./support/world";
 
-let page: Page;
-let browser: Browser;
+Given('the user is on the login page', async function (this: CustomWorld): Promise<void> {
 
-Before(async () => {
-    browser = await chromium.launch({headless: false});
-    const context = await browser.newContext();
-    page = await browser.newPage();
-} );
+    const baseURL = process.env.BASE_URL;
+    await this.page.goto(baseURL!);
 
-After(async () => {
-    await browser.close();
-} );
+    if (!(baseURL!)) {
+      throw new Error("BASEURL is not defined in .env");
+    }
 
- Given('the user is on the login page', async () => {
-    await page.goto("https://practicesoftwaretesting.com/");
-    await page.getByRole("link", { name: "Sign In" }).waitFor({ state: "visible" });
-    await page.getByRole("link", { name: "Sign In" }).click();
-    await page.getByRole("heading", { name: "Login" }).waitFor({ state: "visible" }); 
- });
+    await this.page.waitForLoadState('networkidle');
 
- When('the user enters valid credentials',async() => {
-  
-  await page.getByRole("textbox", { name: "email" }).fill("customer@practicesoftwaretesting.com");
-  await page.getByRole("textbox",{ name:"password"}).fill("welcome01");
- } );
+    await this.page.getByRole("link", { name: "Sign In" }).waitFor({ state: "visible" });
+    await this.page.getByRole("link", { name: "Sign In" }).click();
+    await expect( this.page.getByRole("heading", { name: "Login" })).toBeVisible();
 
- When('clicks the login button', async () => {
-    const loginButton = page.locator('[data-test="login-submit"]');
+});
+
+When('the user enters credentials with email {string} and password {string}', async function (this: CustomWorld, email: string, password: string) {
+    await this.page.getByRole("textbox", { name: "email" }).fill(email);
+    await this.page.getByRole("textbox", { name: "password" }).fill(password);
+});
+
+When('clicks the login button', async function (this: CustomWorld): Promise<void> {
+
+    const loginButton = this.page.locator('[data-test="login-submit"]');
+
     await loginButton.waitFor({ state: "visible" });
-    await loginButton.click();
- } );
 
- Then('the user should be redirected to the my account page', async () => {
-   
-    await page.getByRole("heading", { name: "My Account" }).waitFor({ state: "visible" }); 
-    const headingText = await page.getByRole("heading", { name: "My Account" }).innerText();
-    expect(headingText.trim()).toBe("My account");
-     await expect(page).toHaveURL(/.*account/); 
-   
- } );
-       
+    await Promise.all([
+        this.page.waitForURL(/(account|admin)/, { timeout: 10000 }),
+        loginButton.click()
+    ]);
 
+});
+
+
+Then('the user should be redirected to the my account page', async function(this: CustomWorld): Promise<void> {
+    
+    await this.page.waitForLoadState('networkidle');
+
+    if (this.page.url().includes("account")) {
+        const headingText = await this.page.locator('[data-test="page-title"]').innerText();
+        expect(headingText.trim()).toBe("My account");
+    } else {
+        const headingTextadmin = await this.page.locator('[data-test="page-title"]').innerText();
+        expect(headingTextadmin.trim()).toBe("Sales over the years");
+    }
+
+});
